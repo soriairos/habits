@@ -17,7 +17,9 @@ function serviceWorker(): Plugin {
       const publicFiles = readdirSync("public");
       for (const name of publicFiles) hash.update(readFileSync(`public/${name}`));
       const assets = ["./", ...[...files, ...publicFiles].map((f) => `./${f}`)];
-      const source = readFileSync("sw.js", "utf8")
+      const template = readFileSync("sw.js", "utf8");
+      hash.update(template);
+      const source = template
         .replace("__VERSION__", hash.digest("hex").slice(0, 12))
         .replace("__ASSETS__", JSON.stringify(assets));
       this.emitFile({ type: "asset", fileName: "sw.js", source });

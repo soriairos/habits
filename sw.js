@@ -24,7 +24,7 @@ self.addEventListener("fetch", (event) => {
   if (request.method !== "GET" || new URL(request.url).origin !== self.location.origin) return;
   if (request.mode === "navigate") {
     event.respondWith(
-      fetch(request.url, { cache: "no-cache" }).catch(() =>
+      fetch(request.url, { cache: "reload" }).catch(() =>
         caches.match("./index.html", { cacheName: CACHE }).then((hit) => hit ?? Response.error()),
       ),
     );
