@@ -16,17 +16,29 @@ function toHabit(value: unknown): Habit | null {
   return { id, name, done: days as string[] };
 }
 
-function toState(value: unknown): State {
-  if (!isRecord(value) || !Array.isArray(value.habits)) return emptyState();
+function toState(value: unknown): State | null {
+  if (!isRecord(value) || !Array.isArray(value.habits)) return null;
   const habits = (value.habits as unknown[]).map(toHabit);
-  if (habits.some((h) => h === null)) return emptyState();
+  if (habits.some((h) => h === null)) return null;
   return { habits: habits as Habit[] };
+}
+
+export function parseBackup(text: string): State | null {
+  try {
+    return toState(JSON.parse(text));
+  } catch {
+    return null;
+  }
+}
+
+export function serializeBackup(state: State): string {
+  return JSON.stringify(state, null, 2);
 }
 
 export function load(): State {
   try {
     const raw = localStorage.getItem(KEY);
-    return raw === null ? emptyState() : toState(JSON.parse(raw));
+    return raw === null ? emptyState() : (parseBackup(raw) ?? emptyState());
   } catch {
     return emptyState();
   }

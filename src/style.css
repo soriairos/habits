@@ -127,7 +127,8 @@ button {
 
 .cell:focus-visible,
 .name:focus-visible,
-.add:focus-visible {
+.add:focus-visible,
+.link:focus-visible {
   outline: 1px solid var(--muted);
   outline-offset: 2px;
 }
@@ -146,6 +147,30 @@ button {
 
 .add {
   color: var(--muted);
+}
+
+.footer {
+  display: flex;
+  gap: 16px;
+  margin-top: 64px;
+  font-size: var(--size-label);
+  color: var(--muted);
+}
+
+.link {
+  color: var(--muted);
+}
+
+.link:hover {
+  color: var(--text);
+}
+
+.picker {
+  display: none;
+}
+
+.notice {
+  margin-left: auto;
 }
 
 @media (max-width: 480px) {

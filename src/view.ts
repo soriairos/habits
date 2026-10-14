@@ -10,10 +10,24 @@ import {
   type Day,
   type State,
 } from "./habits";
+import { parseBackup, serializeBackup } from "./store";
 
 type Editing = { kind: "rename"; id: string } | { kind: "new" } | null;
 
 const INITIALS = "SMTWTFS";
+
+async function saveFile(file: File): Promise<void> {
+  if (matchMedia("(pointer: coarse)").matches && navigator.canShare?.({ files: [file] })) {
+    await navigator.share({ files: [file] }).catch(() => undefined);
+    return;
+  }
+  const url = URL.createObjectURL(file);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = file.name;
+  link.click();
+  setTimeout(() => URL.revokeObjectURL(url), 0);
+}
 
 function el<K extends keyof HTMLElementTagNameMap>(
   tag: K,
@@ -37,6 +51,7 @@ export function mount(
   let editing: Editing = null;
   let today: Day = dayKey(now());
   let rendering = false;
+  let importFailed = false;
 
   const refresh = (): void => {
     const current = dayKey(now());
@@ -54,6 +69,7 @@ export function mount(
 
   const update = (next: State): void => {
     state = next;
+    importFailed = false;
     persist(state);
     render();
   };
@@ -145,8 +161,38 @@ export function mount(
     }
     grid.append(last);
 
+    const footer = el("footer", "footer");
+    const exportLink = el("button", "link", "Export");
+    exportLink.addEventListener("click", () => {
+      const file = new File([serializeBackup(state)], `habits-${today}.json`, {
+        type: "application/json",
+      });
+      void saveFile(file);
+    });
+    const picker = el("input", "picker");
+    picker.type = "file";
+    picker.accept = "application/json,.json";
+    picker.addEventListener("change", () => {
+      const file = picker.files?.[0];
+      if (file === undefined) return;
+      void file.text().then((text) => {
+        const next = parseBackup(text);
+        if (next === null) {
+          importFailed = true;
+          render();
+        } else {
+          editing = null;
+          update(next);
+        }
+      });
+    });
+    const importLink = el("button", "link", "Import");
+    importLink.addEventListener("click", () => picker.click());
+    footer.append(exportLink, importLink, picker);
+    if (importFailed) footer.append(el("span", "notice", "Not a habits backup"));
+
     rendering = true;
-    root.replaceChildren(header, grid);
+    root.replaceChildren(header, grid, footer);
     rendering = false;
     if (focus !== null) {
       focus.focus();
