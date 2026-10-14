@@ -25,3 +25,4 @@ Every UI change is verified in the browser pane (`preview_start` with `dev`), in
 - Builds use `base: '/habits/'`; dev stays at `/`. Preview a build with `npx vite preview --base /habits/`.
 - Installable PWA: `public/manifest.webmanifest`, icons in `public/` (regenerate with `node scripts/icons.mjs`).
 - `sw.js` is a template; the build fills in the asset list and a content-hash cache version. Registered only in production.
+- Service worker rule: precache with `cache: 'reload'` (bypass the HTTP cache; Pages sends max-age=600), navigations network-first with `cache: 'no-cache'` and cached `index.html` as the offline fallback, hashed assets cache-first. Install calls `skipWaiting`, activate deletes old caches and calls `clients.claim`.

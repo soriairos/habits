@@ -5,7 +5,7 @@ self.addEventListener("install", (event) => {
   event.waitUntil(
     caches
       .open(CACHE)
-      .then((cache) => cache.addAll(ASSETS))
+      .then((cache) => cache.addAll(ASSETS.map((url) => new Request(url, { cache: "reload" }))))
       .then(() => self.skipWaiting()),
   );
 });
@@ -22,6 +22,13 @@ self.addEventListener("activate", (event) => {
 self.addEventListener("fetch", (event) => {
   const { request } = event;
   if (request.method !== "GET" || new URL(request.url).origin !== self.location.origin) return;
-  const lookup = request.mode === "navigate" ? caches.match("./") : caches.match(request);
-  event.respondWith(lookup.then((hit) => hit ?? fetch(request)));
+  if (request.mode === "navigate") {
+    event.respondWith(
+      fetch(request.url, { cache: "no-cache" }).catch(() =>
+        caches.match("./index.html", { cacheName: CACHE }).then((hit) => hit ?? Response.error()),
+      ),
+    );
+    return;
+  }
+  event.respondWith(caches.match(request).then((hit) => hit ?? fetch(request)));
 });
