@@ -38,7 +38,8 @@ body {
 #app {
   max-width: 640px;
   margin: 0 auto;
-  padding: 96px 16px;
+  padding: calc(96px + env(safe-area-inset-top)) max(16px, env(safe-area-inset-right))
+    calc(96px + env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
 }
 
 .date {
@@ -149,7 +150,7 @@ button {
 
 @media (max-width: 480px) {
   #app {
-    padding-top: 48px;
+    padding-top: calc(48px + env(safe-area-inset-top));
   }
 
   .row {
