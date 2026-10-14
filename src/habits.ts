@@ -72,3 +72,8 @@ export function renameHabit(state: State, id: string, name: string): State {
   if (trimmed === "") return removeHabit(state, id);
   return updateHabit(state, id, (h) => ({ ...h, name: trimmed }));
 }
+
+export function msUntilNextDay(now: Date): number {
+  const next = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+  return next.getTime() - now.getTime();
+}

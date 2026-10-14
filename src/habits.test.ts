@@ -4,6 +4,7 @@ import {
   dayKey,
   emptyState,
   lastDays,
+  msUntilNextDay,
   removeHabit,
   renameHabit,
   streak,
@@ -105,5 +106,15 @@ describe("removeHabit", () => {
   it("removes only the matching habit", () => {
     const state = addHabit(addHabit(emptyState(), "a", "A"), "b", "B");
     expect(removeHabit(state, "a").habits.map((h) => h.id)).toEqual(["b"]);
+  });
+});
+
+describe("msUntilNextDay", () => {
+  it("counts down to the next local midnight", () => {
+    expect(msUntilNextDay(new Date(2026, 9, 14, 23, 59, 30))).toBe(30_000);
+  });
+
+  it("crosses month ends", () => {
+    expect(msUntilNextDay(new Date(2026, 9, 31, 12, 0, 0))).toBe(12 * 3_600_000);
   });
 });
