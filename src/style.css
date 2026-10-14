@@ -1,0 +1,158 @@
+:root {
+  --bg: #fbfbfa;
+  --text: #191919;
+  --muted: #9b9a97;
+  --hairline: #ededec;
+  --font: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --size-body: 15px;
+  --size-label: 12px;
+  --size-title: 32px;
+  --cell: 22px;
+  color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #191919;
+    --text: #fbfbfa;
+    --muted: #9b9a97;
+    --hairline: #2f2f2f;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: var(--size-body);
+  font-weight: 400;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+#app {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 96px 16px;
+}
+
+.date {
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--size-label);
+}
+
+.title {
+  margin: 4px 0 40px;
+  font-size: var(--size-title);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+button,
+input {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+
+button {
+  cursor: pointer;
+  text-align: left;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) repeat(7, var(--cell)) 3.5ch;
+  column-gap: 8px;
+  align-items: center;
+  min-height: 44px;
+  border-bottom: 1px solid var(--hairline);
+}
+
+.row.head {
+  min-height: 28px;
+}
+
+.name,
+.name-input {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.name-input,
+.new input {
+  width: 100%;
+  outline: none;
+}
+
+.name-input::placeholder {
+  color: var(--muted);
+}
+
+.initial {
+  color: var(--muted);
+  font-size: var(--size-label);
+  text-align: center;
+}
+
+.initial.is-today {
+  color: var(--text);
+  font-weight: 500;
+}
+
+.cell {
+  width: var(--cell);
+  height: var(--cell);
+  border: 1px solid var(--hairline);
+  border-radius: 4px;
+  transition: background-color 120ms ease, border-color 120ms ease;
+}
+
+.cell.is-done {
+  background: var(--text);
+  border-color: var(--text);
+}
+
+.cell:focus-visible,
+.name:focus-visible,
+.add:focus-visible {
+  outline: 1px solid var(--muted);
+  outline-offset: 2px;
+}
+
+.streak {
+  color: var(--muted);
+  font-size: var(--size-label);
+  text-align: right;
+}
+
+.new {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+}
+
+.add {
+  color: var(--muted);
+}
+
+@media (max-width: 480px) {
+  #app {
+    padding-top: 48px;
+  }
+
+  .row {
+    column-gap: 6px;
+  }
+}
