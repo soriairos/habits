@@ -2,7 +2,9 @@ import { describe, expect, it } from "vitest";
 import {
   addHabit,
   dayKey,
+  daysBetween,
   emptyState,
+  historyDays,
   lastDays,
   msUntilNextDay,
   removeHabit,
@@ -29,6 +31,38 @@ describe("lastDays", () => {
       "2026-03-01",
       "2026-03-02",
     ]);
+  });
+});
+
+describe("daysBetween", () => {
+  it("counts calendar days across a DST change", () => {
+    expect(daysBetween("2026-03-07", "2026-03-09")).toBe(2);
+    expect(daysBetween("2026-10-24", "2026-10-26")).toBe(2);
+  });
+});
+
+describe("historyDays", () => {
+  const state = (done: string[]): State => ({ habits: [habit(done)] });
+
+  it("returns the minimum window ending today when history is short", () => {
+    const days = historyDays(state(["2026-10-13"]), "2026-10-14", 7);
+    expect(days).toEqual(lastDays("2026-10-14", 7));
+  });
+
+  it("reaches back to the oldest checked day of any habit", () => {
+    const s: State = { habits: [habit(["2026-10-10"]), { ...habit(["2026-09-30"]), id: "b" }] };
+    const days = historyDays(s, "2026-10-14", 7);
+    expect(days[0]).toBe("2026-09-30");
+    expect(days.at(-1)).toBe("2026-10-14");
+    expect(days).toHaveLength(15);
+  });
+
+  it("ignores checked days after today", () => {
+    expect(historyDays(state(["2026-10-20"]), "2026-10-14", 3)).toEqual(lastDays("2026-10-14", 3));
+  });
+
+  it("works with no habits", () => {
+    expect(historyDays(emptyState(), "2026-10-14", 2)).toEqual(["2026-10-13", "2026-10-14"]);
   });
 });
 

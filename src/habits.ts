@@ -35,6 +35,15 @@ export function lastDays(today: Day, n: number): Day[] {
   return Array.from({ length: n }, (_, i) => addDays(today, i - n + 1));
 }
 
+export function daysBetween(from: Day, to: Day): number {
+  return Math.round((parseDay(to).getTime() - parseDay(from).getTime()) / 86_400_000);
+}
+
+export function historyDays(state: State, today: Day, minimum: number): Day[] {
+  const oldest = state.habits.flatMap((h) => h.done).reduce((a, b) => (b < a ? b : a), today);
+  return lastDays(today, Math.max(minimum, daysBetween(oldest, today) + 1));
+}
+
 export function streak(habit: Habit, today: Day): number {
   const done = new Set(habit.done);
   let day = done.has(today) ? today : addDays(today, -1);
